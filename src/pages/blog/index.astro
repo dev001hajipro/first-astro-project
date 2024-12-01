@@ -2,9 +2,13 @@
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
 import Layout from "../../components/layout.astro";
+import Pagination from "../../components/pagination.astro";
 
 const blogs = await getCollection("blog");
 const orderedBlogs = blogs.sort((a, b) => a.data.id - b.data.id);
+const pageSize = 3;
+const lastPage = orderedBlogs.length / pageSize;
+const limitedBlogs = orderedBlogs.slice(0, pageSize);
 ---
 
 <Layout title="Blog" description="Blog">
@@ -13,7 +17,7 @@ const orderedBlogs = blogs.sort((a, b) => a.data.id - b.data.id);
             <h1>Blog</h1>
             <ul>
                 {
-                    orderedBlogs.map((blog) => (
+                    limitedBlogs.map((blog) => (
                         <div class="blogCard">
                             <div class="cardContainer">
                                 <h2>{blog.data.title}</h2>
@@ -33,5 +37,6 @@ const orderedBlogs = blogs.sort((a, b) => a.data.id - b.data.id);
                 }
             </ul>
         </div>
+        <Pagination lastPage={lastPage} />
     </div>
 </Layout>

@@ -1,0 +1,60 @@
+---
+import type { InferGetStaticPropsType, GetStaticPaths, PaginateFunction } from 'astro';
+import { Image } from "astro:assets";
+import { getCollection } from "astro:content";
+import Layout from "../../components/layout.astro";
+import Pagination from "../../components/pagination.astro";
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+export const getStaticPaths = (async ({ paginate } : { paginate: PaginateFunction }) => {
+    const blogs = await getCollection("blog");
+    const orderedBlogs = blogs.sort((a, b) => a.data.id - b.data.id);
+    const pathsData = orderedBlogs.map((blog) => ({
+        params: {
+            slug: blog.slug
+        },
+        props: {
+            blog: blog,
+        }
+    }));
+    return paginate(pathsData, { pageSize: 3 });
+}) satisfies GetStaticPaths;
+
+const {
+    data: posts,
+    lastPage
+} = Astro.props.page;
+// console.log(Astro.props.page);
+// console.log('#########################222');
+// console.log(Astro.props)
+---
+<Layout title="Blog" description="Blog">
+    <div class="wrapper">
+        <div class="container">
+            <h1>Blog</h1>
+            <ul>
+                {
+                    posts.map((blog: { props : { blog: any }}) => (
+                        <div class="blogCard">
+                            <div class="cardContainer">
+                                <h2>{blog.props.blog.data.title}</h2>
+                                <p>{blog.props.blog.data.excerpt}</p>
+                                <p>{blog.props.blog.data.date}</p>
+                                <a href={`/blog/${blog.props.blog.slug}`}>Read More</a>
+                            </div>
+                            <div class="blogImg">
+                                <Image src={blog.props.blog.data.image} alt={blog.props.blog.data.title} height={300} width={1000}/>
+                            </div>
+
+                        </div>
+                        <li>
+                            <a href={`/blog/${blog.props.blog.slug}`}>{blog.props.blog.title}</a>
+                        </li>
+                    ))
+                }
+            </ul>
+        </div>
+        <Pagination lastPage={lastPage} />
+    </div>
+</Layout>
