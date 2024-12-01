@@ -1,0 +1,19 @@
+---
+import { Image } from "astro:assets";
+import Logo from "../images/logo.png";
+---
+
+<header>
+  <div class="container">
+    <div>
+      <a href="/">
+        <Image src={Logo} alt="logo" />
+      </a>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+</header>
